@@ -7,7 +7,7 @@
 import ScanditFrameworksCore
 import ScanditTextCapture
 
-public class TextCaptureModule: NSObject, FrameworkModule {
+open class TextCaptureModule: NSObject, FrameworkModule {
 
     private let textCaptureListener: FrameworksTextCaptureListener
     private let textCaptureDeserializer: TextCaptureDeserializer
