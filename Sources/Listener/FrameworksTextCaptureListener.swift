@@ -23,7 +23,7 @@ fileprivate extension Emitter {
     }
 }
 
-public class FrameworksTextCaptureListener: NSObject, TextCaptureListener {
+open class FrameworksTextCaptureListener: NSObject, TextCaptureListener {
     private let emitter: Emitter
 
     public init(emitter: Emitter) {
@@ -33,17 +33,17 @@ public class FrameworksTextCaptureListener: NSObject, TextCaptureListener {
     private var isEnabled = AtomicBool()
     private let textCapturedEvent = EventWithResult<Bool>(event: Event(.didCaptureText))
 
-    func enable() {
+    public func enable() {
         if isEnabled.value { return }
         isEnabled.value = true
     }
 
-    func disable() {
+    public func disable() {
         guard isEnabled.value else { return }
         isEnabled.value = false
     }
 
-    func finishDidCaptureText(enabled: Bool) {
+    public func finishDidCaptureText(enabled: Bool) {
         textCapturedEvent.unlock(value: enabled)
     }
 
