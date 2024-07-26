@@ -23,7 +23,8 @@ fileprivate extension Emitter {
     }
 }
 
-public class FrameworksTextCaptureListener: NSObject, TextCaptureListener {
+@available(*, deprecated)
+open class FrameworksTextCaptureListener: NSObject, TextCaptureListener {
     private let emitter: Emitter
 
     public init(emitter: Emitter) {
@@ -33,17 +34,17 @@ public class FrameworksTextCaptureListener: NSObject, TextCaptureListener {
     private var isEnabled = AtomicBool()
     private let textCapturedEvent = EventWithResult<Bool>(event: Event(.didCaptureText))
 
-    func enable() {
+    public func enable() {
         if isEnabled.value { return }
         isEnabled.value = true
     }
 
-    func disable() {
+    public func disable() {
         guard isEnabled.value else { return }
         isEnabled.value = false
     }
 
-    func finishDidCaptureText(enabled: Bool) {
+    public func finishDidCaptureText(enabled: Bool) {
         textCapturedEvent.unlock(value: enabled)
     }
 
@@ -53,7 +54,7 @@ public class FrameworksTextCaptureListener: NSObject, TextCaptureListener {
         guard isEnabled.value, emitter.hasListener(for: .didCaptureText) else { return }
         defer { LastFrameData.shared.frameData = nil }
         LastFrameData.shared.frameData = frameData
-        let enabled = textCapturedEvent.emit(on: emitter, 
+        let enabled = textCapturedEvent.emit(on: emitter,
                                              payload: ["session": session.jsonString]) ?? true
         textCapture.isEnabled = enabled
     }
