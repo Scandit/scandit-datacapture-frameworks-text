@@ -7,7 +7,6 @@
 import ScanditFrameworksCore
 import ScanditTextCapture
 
-@available(*, deprecated)
 open class TextCaptureModule: NSObject, FrameworkModule {
 
     private let textCaptureListener: FrameworksTextCaptureListener
@@ -104,7 +103,7 @@ open class TextCaptureModule: NSObject, FrameworkModule {
             result.success(result: nil)
             return
         }
-
+                
         do {
             try textCaptureDeserializer.update(overlay, fromJSONString: overlayJson)
             result.success(result: nil)
@@ -114,7 +113,6 @@ open class TextCaptureModule: NSObject, FrameworkModule {
     }
 }
 
-@available(*, deprecated)
 extension TextCaptureModule: TextCaptureDeserializerDelegate {
     public func textCaptureDeserializer(_ deserializer: TextCaptureDeserializer,
                                         didStartDeserializingMode mode: TextCapture,
@@ -150,7 +148,6 @@ extension TextCaptureModule: TextCaptureDeserializerDelegate {
     }
 }
 
-@available(*, deprecated)
 extension TextCaptureModule: DeserializationLifeCycleObserver {
     public func dataCaptureContext(deserialized context: DataCaptureContext?) {
         self.context = context
@@ -159,16 +156,17 @@ extension TextCaptureModule: DeserializationLifeCycleObserver {
     public func didDisposeDataCaptureContext() {
         self.context = nil
         self.dataCaptureView = nil
+
     }
 
     public func dataCaptureView(deserialized view: DataCaptureView?) {
         self.dataCaptureView = view
-
-
+        
+        
         guard let dcView = view, let overlay = textCaptureOverlay else {
             return
         }
-
+        
         dcView.addOverlay(overlay)
     }
 
