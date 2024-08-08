@@ -23,6 +23,7 @@ fileprivate extension Emitter {
     }
 }
 
+@available(*, deprecated)
 open class FrameworksTextCaptureListener: NSObject, TextCaptureListener {
     private let emitter: Emitter
 
@@ -53,7 +54,7 @@ open class FrameworksTextCaptureListener: NSObject, TextCaptureListener {
         guard isEnabled.value, emitter.hasListener(for: .didCaptureText) else { return }
         defer { LastFrameData.shared.frameData = nil }
         LastFrameData.shared.frameData = frameData
-        let enabled = textCapturedEvent.emit(on: emitter, 
+        let enabled = textCapturedEvent.emit(on: emitter,
                                              payload: ["session": session.jsonString]) ?? true
         textCapture.isEnabled = enabled
     }
