@@ -7,12 +7,13 @@
 import ScanditFrameworksCore
 import ScanditTextCapture
 
+@available(*, deprecated)
 struct TextCaptureDefaults: DefaultsEncodable {
     private let recommendedCameraSettings: CameraSettingsDefaults
     private let textCaptureOverlayDefaults: TextCaptureOverlayDefaults
     private let textCaptureSettingsDefaults: TextCaptureSettingsDefaults
 
-    init(recommendedCameraSettings: CameraSettingsDefaults, 
+    init(recommendedCameraSettings: CameraSettingsDefaults,
          textCaptureOverlayDefaults: TextCaptureOverlayDefaults,
          textCaptureSettingsDefaults: TextCaptureSettingsDefaults) {
         self.recommendedCameraSettings = recommendedCameraSettings
@@ -51,6 +52,7 @@ struct TextCaptureOverlayDefaults: DefaultsEncodable {
     }
 }
 
+@available(*, deprecated)
 struct TextCaptureSettingsDefaults: DefaultsEncodable {
     let settings: TextCaptureSettings
 
