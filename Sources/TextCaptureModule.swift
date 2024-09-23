@@ -17,6 +17,10 @@ open class TextCaptureModule: NSObject, FrameworkModule {
 
     private var modeEnabled = true
 
+    private var dataCaptureView: DataCaptureView?
+
+    private var textCaptureOverlay: TextCaptureOverlay?
+
     public init(textCaptureListener: FrameworksTextCaptureListener,
                 deserializer: TextCaptureDeserializer = TextCaptureDeserializer()) {
         self.textCaptureListener = textCaptureListener
@@ -96,7 +100,7 @@ open class TextCaptureModule: NSObject, FrameworkModule {
     }
 
     public func updateOverlay(overlayJson: String, result: FrameworksResult) {
-        guard let overlay: TextCaptureOverlay = DataCaptureViewHandler.shared.findFirstOverlayOfType() else {
+        guard let overlay = self.textCaptureOverlay else {
             result.success(result: nil)
             return
         }
@@ -142,6 +146,7 @@ extension TextCaptureModule: TextCaptureDeserializerDelegate {
     public func textCaptureDeserializer(_ deserializer: TextCaptureDeserializer,
                                         didFinishDeserializingOverlay overlay: TextCaptureOverlay,
                                         from JSONValue: JSONValue) {
+        self.textCaptureOverlay = overlay
     }
 }
 
@@ -153,6 +158,18 @@ extension TextCaptureModule: DeserializationLifeCycleObserver {
 
     public func didDisposeDataCaptureContext() {
         self.context = nil
+        self.dataCaptureView = nil
+    }
+
+    public func dataCaptureView(deserialized view: DataCaptureView?) {
+        self.dataCaptureView = view
+
+
+        guard let dcView = view, let overlay = textCaptureOverlay else {
+            return
+        }
+
+        dcView.addOverlay(overlay)
     }
 
     public func dataCaptureContext(addMode modeJson: String) throws {
@@ -186,9 +203,10 @@ extension TextCaptureModule: DeserializationLifeCycleObserver {
 
     public func dataCaptureContextAllModeRemoved() {
         self.textCapture = nil
+        removeCurrentOverlay()
     }
 
-    public func dataCaptureView(addOverlay overlayJson: String, to view: DataCaptureView) throws {
+    public func dataCaptureView(addOverlay overlayJson: String) throws {
         if  JSONValue(string: overlayJson).string(forKey: "type") != "textCapture" {
             return
         }
@@ -199,7 +217,30 @@ extension TextCaptureModule: DeserializationLifeCycleObserver {
 
         try dispatchMainSync {
             let overlay = try textCaptureDeserializer.overlay(fromJSONString: overlayJson, withMode: mode)
-            DataCaptureViewHandler.shared.addOverlayToView(view, overlay: overlay)
+            self.dataCaptureView?.addOverlay(overlay)
         }
+    }
+
+    public func dataCaptureView(removeOverlay overlayJson: String) {
+        if  JSONValue(string: overlayJson).string(forKey: "type") != "textCapture" {
+            return
+        }
+
+        removeCurrentOverlay()
+    }
+
+    public func dataCaptureViewRemoveAllOverlays() {
+        removeCurrentOverlay()
+    }
+
+    private func removeCurrentOverlay() {
+        guard let overlay = self.textCaptureOverlay else {
+            return
+        }
+
+        dispatchMainSync {
+            self.dataCaptureView?.removeOverlay(overlay)
+        }
+        self.textCaptureOverlay = nil
     }
 }
